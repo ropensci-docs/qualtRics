@@ -1,0 +1,12 @@
+{
+  "commit": {
+    "commit": "01829f90eec2ced59adfd39350d8ee9fd8a0c707",
+    "author": "Julia Silge <julia.silge@gmail.com>",
+    "time": "2021-05-03 23:46:44",
+    "files": 1,
+    "merge": false,
+    "message": "Fix breakout_sets + label warning\n"
+  },
+  "remote": "https://github.com/ropensci/qualtRics",
+  "pkg": "qualtRics"
+}
