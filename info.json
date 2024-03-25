@@ -1,0 +1,12 @@
+{
+  "commit": {
+    "commit": "72bde4e84805d659c98e77c2b92e12a13513081f",
+    "author": "Julia Silge <julia.silge@gmail.com>",
+    "time": "2024-01-24 23:27:25",
+    "files": 2,
+    "merge": false,
+    "message": "Bump to development version. Closes #337.\n"
+  },
+  "repo": "https://github.com/ropensci/qualtRics",
+  "pkg": "qualtRics"
+}
