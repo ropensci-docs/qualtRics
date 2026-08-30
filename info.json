@@ -1,0 +1,13 @@
+{
+  "commit": {
+    "commit": "71261227849c3518db6c855d3520f9db6ea1bd4c",
+    "author": "Adam Pilipshen <martialmetrics@gmail.com>",
+    "time": "2026-06-25T15:43:12Z",
+    "files": 1,
+    "merge": false,
+    "message": "Remove CRAN-SUBMISSION after 3.3.0 release\n"
+  },
+  "repo": "https://github.com/ropensci/qualtRics",
+  "pkg": "qualtRics",
+  "time": "2026-08-30T07:25:47Z"
+}

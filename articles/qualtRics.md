@@ -1,0 +1,183 @@
+# Introduction to qualtRics
+
+[Qualtrics](https://www.qualtrics.com/) is an online survey and data
+collection software platform. Qualtrics is used across many domains in
+both academia and industry for online surveys and research. While users
+can manually download survey responses from Qualtrics through a browser,
+importing this data into R is then cumbersome. The qualtRics R package
+implements the retrieval of survey data using the Qualtrics API and aims
+to reduce the pre-processing steps needed in analyzing such surveys.
+
+Note that your institution must support API access and that it must be
+enabled for your account. Whoever manages your Qualtrics account can
+help you with this. Please refer to the [Qualtrics
+documentation](https://api.qualtrics.com/) to find your API token.
+
+The authors and contributors for this R package are not affiliated with
+Qualtrics and Qualtrics does not offer support for this R package.
+
+## Usage
+
+Currently, the package contains three core functions:
+
+1.  [`all_surveys()`](https://docs.ropensci.org/qualtRics/reference/all_surveys.md)
+    fetches a list of all surveys that you own or have access to from
+    Qualtrics.
+2.  [`fetch_survey()`](https://docs.ropensci.org/qualtRics/reference/fetch_survey.md)
+    downloads a survey from Qualtrics and loads it into R.
+3.  [`read_survey()`](https://docs.ropensci.org/qualtRics/reference/read_survey.md)
+    allows you to read CSV files you download manually from Qualtrics.
+
+It also contains a number of helper functions, including:
+
+1.  [`qualtrics_api_credentials()`](https://docs.ropensci.org/qualtRics/reference/qualtrics_api_credentials.md)
+    stores your API key and base url in environment variables.
+2.  [`survey_questions()`](https://docs.ropensci.org/qualtRics/reference/survey_questions.md)
+    retrieves a data frame containing questions and question IDs for a
+    survey;
+    [`extract_colmap()`](https://docs.ropensci.org/qualtRics/reference/extract_colmap.md)
+    retrieves a similar data frame with more detailed mapping from
+    columns to labels.
+3.  [`metadata()`](https://docs.ropensci.org/qualtRics/reference/metadata.md)
+    retrieves metadata about your survey, such as questions, survey
+    flow, number of responses etc.
+
+Note that you can only export surveys that you own, or to which you have
+been given administration rights.
+
+## Registering your Qualtrics credentials
+
+There are two important credentials you need to authenticate with the
+Qualtrics API. These are your **API key** and **datacenter-specific base
+URL**. The base URL you pass to the qualtRics package should look like
+`yourdatacenterid.qualtrics.com`, without a scheme such as `https://`.
+The [Qualtrics API documentation](https://api.qualtrics.com/) explains
+how you can find your base URL.
+
+You can store your API credentials `QUALTRICS_API_KEY` and
+`QUALTRICS_BASE_URL` in your `.Renviron` file for repeated use across
+sessions. The qualtRics package has a function to help with this.
+
+``` r
+
+library(qualtRics)
+
+qualtrics_api_credentials(api_key = "<YOUR-QUALTRICS_API_KEY>", 
+                          base_url = "<YOUR-QUALTRICS_BASE_URL>",
+                          install = TRUE)
+```
+
+After you use this function, reload your environment
+(`readRenviron("~/.Renviron")`) so you can use the credentials without
+restarting R.
+
+**NOTE:** If you get an error when fetching a survey like:
+
+> Request proxied. For faster response times, use this host instead:
+> xxx.qualtrics.com
+
+then change your `QUALTRICS_BASE_URL` to use the suggested host.
+
+## A simple Qualtrics workflow
+
+Once your Qualtrics API credentials are stored, you can see what surveys
+are available to you.
+
+``` r
+
+surveys <- all_surveys() 
+```
+
+You can then download the data from any of these individual surveys (for
+example, perhaps the sixth one) directly into R.
+
+``` r
+
+mysurvey <- fetch_survey(surveyID = surveys$id[6], 
+                         verbose = TRUE)
+```
+
+## More detailed control
+
+You can add date parameters to only retrieve responses between certain
+dates:
+
+``` r
+
+mysurvey <- fetch_survey(surveys$id[4],
+                         start_date = "2018-10-01",
+                         end_date = "2018-10-31",
+                         label = FALSE)
+```
+
+Note that your date and time settings may not correspond to your own
+timezone. You can find out how to do this
+[here](https://www.qualtrics.com/support/survey-platform/managing-your-account/research-core-account-settings/#user-settings).
+See [“Dates and Times” under “Instructions”](https://api.qualtrics.com/)
+for more information about how Qualtrics handles dates and times. **Keep
+in mind that this is important if you plan on using times / dates as
+cut-off points to filter data**.
+
+You may also reference a response ID;
+[`fetch_survey()`](https://docs.ropensci.org/qualtRics/reference/fetch_survey.md)
+will then download all responses that were submitted after that
+response:
+
+``` r
+
+mysurvey <- fetch_survey(surveys$id[4],
+                         last_response = "R_3mmovCIeMllvsER",
+                         label = FALSE,
+                         verbose = TRUE)
+```
+
+You can filter a survey for specific questions:
+
+``` r
+
+# what are the questions in a certain survey?
+questions <- survey_questions(surveyID = surveys$id[6])
+
+# download that survey, filtering for only certain questions
+mysurvey <- fetch_survey(surveyID = surveys$id[6],
+                         save_dir = tempdir(),
+                         include_questions = c("QID1", "QID2", "QID3"),
+                         verbose = TRUE)
+```
+
+You can store the results in a specific location if you like:
+
+``` r
+
+mysurvey <- fetch_survey(surveyID = surveys$id[6], 
+                         save_dir = "/users/Julia/Desktop/", 
+                         verbose = TRUE)
+```
+
+Note that surveys that are stored in this way will be saved as an
+[RDS](https://stat.ethz.ch/R-manual/R-devel/library/base/html/readRDS.html)
+file rather than e.g. a CSV. Reading an RDS file can be done like so:
+
+``` r
+
+mysurvey <- readRDS(file = "/users/Julia/Desktop/mysurvey.rds")
+```
+
+You can read a survey that you downloaded manually from Qualtrics’
+website via a browser using
+[`read_survey()`](https://docs.ropensci.org/qualtRics/reference/read_survey.md):
+
+``` r
+
+mysurvey <- read_survey("/users/Julia/Desktop/mysurvey.csv")
+```
+
+To avoid special characters (mainly periods) in header names,
+[`read_survey()`](https://docs.ropensci.org/qualtRics/reference/read_survey.md)
+uses question labels as the header names. The question belonging to that
+label is then added using the
+[sjlabelled](https://CRAN.R-project.org/package=sjlabelled) package.
+Qualtrics gives names to these labels automatically, but you can easily
+change them.
+
+![](qualtricsdf.png)
