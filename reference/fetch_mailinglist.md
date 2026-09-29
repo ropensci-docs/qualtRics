@@ -1,0 +1,50 @@
+# Download a mailing list from Qualtrics
+
+Download a mailing list from Qualtrics
+
+## Usage
+
+``` r
+fetch_mailinglist(mailinglistID)
+```
+
+## Arguments
+
+- mailinglistID:
+
+  String. Unique ID for the mailing list you want to download. Returned
+  as `mailingListId` by the
+  [all_mailinglists](https://docs.ropensci.org/qualtRics/reference/all_mailinglists.md)
+  function.
+
+## Details
+
+This function uses the Qualtrics XM Directory API. The directory it
+queries is discovered automatically from your account. If your account
+has more than one XM Directory, set the `QUALTRICS_DIRECTORY_ID`
+environment variable to the directory ID you want to use; otherwise the
+first directory returned by the API is used (with a warning).
+
+If the request to the Qualtrics API made by this function fails, the
+request will be retried. If you see these failures on a 500 error (such
+as a 504 error) be patient while the request is retried; it will
+typically succeed on retrying. If you see other types of errors,
+retrying is unlikely to help.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# Register your Qualtrics credentials if you haven't already
+qualtrics_api_credentials(
+  api_key = "<YOUR-API-KEY>",
+  base_url = "<YOUR-BASE-URL>"
+)
+
+# Retrieve a list of all mailing lists
+mailinglists <- all_mailinglists()
+
+# Retrieve a single mailing list
+mailinglist <- fetch_mailinglist(mailinglists$mailingListId[1])
+} # }
+```
