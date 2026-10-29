@@ -1,0 +1,56 @@
+# Retrieve a data frame containing question IDs and labels
+
+Retrieve a data frame containing question IDs and labels
+
+## Usage
+
+``` r
+survey_questions(surveyID)
+```
+
+## Arguments
+
+- surveyID:
+
+  A string. Unique ID for the survey you want to download. Returned as
+  `id` by the
+  [all_surveys](https://docs.ropensci.org/qualtRics/reference/all_surveys.md)
+  function.
+
+## Details
+
+If the request to the Qualtrics API made by this function fails, the
+request will be retried. If you see these failures on a 500 error (such
+as a 504 error) be patient while the request is retried; it will
+typically succeed on retrying. If you see other types of errors,
+retrying is unlikely to help.
+
+## See also
+
+See <https://api.qualtrics.com/> for documentation on the Qualtrics API.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# Register your Qualtrics credentials if you haven't already
+qualtrics_api_credentials(
+  api_key = "<YOUR-API-KEY>",
+  base_url = "<YOUR-BASE-URL>"
+)
+
+# Retrieve a list of surveys
+surveys <- all_surveys()
+
+# Retrieve questions for a survey
+questions <- survey_questions(surveyID = surveys$id[6])
+
+# Retrieve a single survey, filtering for specific questions
+mysurvey <- fetch_survey(
+  surveyID = surveys$id[6],
+  save_dir = tempdir(),
+  include_questions = c("QID1", "QID2", "QID3"),
+  verbose = TRUE
+)
+} # }
+```

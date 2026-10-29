@@ -1,0 +1,78 @@
+# Download metadata for a survey
+
+Using this function, you can retrieve metadata about your survey. This
+information includes question metadata (type, options, choices, etc),
+number of responses, general metadata, survey flow, etc.
+
+## Usage
+
+``` r
+metadata(surveyID, get = NULL, questions = NULL)
+```
+
+## Arguments
+
+- surveyID:
+
+  A string. Unique ID for the survey you want to download. Returned as
+  "id" by the
+  [all_surveys](https://docs.ropensci.org/qualtRics/reference/all_surveys.md)
+  function.
+
+- get:
+
+  A character vector containing any of the following: "metadata",
+  "questions", "responsecounts", "blocks", "flow", "embedded_data", or
+  "comments". Will return included elements. By default, the function
+  returns the "metadata", "questions", and "responsecounts" elements.
+  See examples below for more information.
+
+- questions:
+
+  Character vector containing the names of questions for which you want
+  to return metadata. Defaults to NULL (all questions).
+
+## Details
+
+If the request to the Qualtrics API made by this function fails, the
+request will be retried. If you see these failures on a 500 error (such
+as a 504 error) be patient while the request is retried; it will
+typically succeed on retrying. If you see other types of errors,
+retrying is unlikely to help.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# Register your Qualtrics credentials if you haven't already
+qualtrics_api_credentials(
+  api_key = "<YOUR-API-KEY>",
+  base_url = "<YOUR-BASE-URL>"
+)
+
+# Retrieve a list of surveys
+surveys <- all_surveys()
+
+# Get metadata for a survey
+md <- metadata(surveyID = surveys$id[6])
+
+# Get metadata with specific elements
+md_specific <- metadata(
+  surveyID = id,
+  get = c("flow")
+)
+
+# Get specific question metadata
+question_specific <- metadata(
+  surveyID = id,
+  get = c("questions"),
+  questions = c("Q1", "Q2")
+)
+
+# Example of a metadata file
+file <- system.file("extdata", "metadata.rds", package = "qualtRics")
+
+# Load
+metadata_ex <- readRDS(file = file)
+} # }
+```
